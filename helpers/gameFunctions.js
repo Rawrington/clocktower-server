@@ -1,0 +1,315 @@
+import standardRoles from './roles.json' assert { type: 'json' };
+import fabled from './fabled.json' assert { type: 'json' };
+import { PermissionsBitField } from 'discord.js';
+
+// this is taken from Moveer and edited, it just prevents unneccesaary errors and tells us what went wrong.
+function canMove(guild, member, channel) {
+  if (guild.members.me == null) {
+    console.error('HOW COULD THIS HAPPEN DINESH?');
+    return false;
+  }
+
+  const userVoiceChannel = guild.voiceStates.cache
+    .filter((user) => user.id === member.id)
+    .first().channel;
+
+  if (userVoiceChannel == null) {
+    console.log(`User ${member.id} is not connected to voice`);
+    return false;
+  }
+
+  // Validate that we have access to the fromVoiceChannel
+  const permissions = userVoiceChannel.permissionsFor(
+    guild.members.me,
+  );
+
+  if (!permissions.has(PermissionsBitField.Flags.MoveMembers)) {
+    console.log(`Could not move ${member} - Splatter is missing MOVE permissions to - ${userVoiceChannel}`);
+    return false;
+  }
+
+  if (!permissions.has(PermissionsBitField.Flags.Connect)) {
+    console.log(`Could not move ${member}. Splatter is missing CONNECT permissions to - ${userVoiceChannel}`);
+    return false;
+  }
+
+  // Validate that we have access to the toVoiceChannel
+  const botPerms = channel.permissionsFor(
+    guild.members.me,
+  );
+
+  const userPerms = channel.permissionsFor(member);
+
+  if (!userPerms.has(PermissionsBitField.Flags.ViewChannel) && !botPerms.has(PermissionsBitField.Flags.ViewChannel)) {
+    console.log(`Could not move ${member}. Splatter is missing VIEW CHANNEL permissions to - ${channel}`);
+    return false;
+  }
+
+  return true;
+}
+
+export async function moveToNightChannels(client, game) {
+  if (game.players.length <= 0) {
+    return 'Not enough players!';
+  }
+
+  const guild = await client.guilds.fetch(game.id);
+
+  const playerList = game.players.map(player => player.member).filter(member => member && member.voice);
+
+  if(playerList.length <= 0) {
+    return;
+  }
+
+  const nightChannels = guild.channels.cache.filter((channel) => channel.parent 
+    && channel.parentId === game.nightCategory
+    && channel.permissionsFor(playerList[0]).has(PermissionsBitField.Flags.Connect)
+  ).sort((a, b) => {
+    return a.rawPosition - b.rawPosition;
+  });
+
+  if (nightChannels.size < playerList.length) {
+    return 'Not enough channels for ' + playerList.length + 'players';
+  }
+
+  const channelIterator = nightChannels.entries();
+
+  playerList.forEach((member) => {
+    if(member && member.voice) {
+      try {
+        const channel = channelIterator.next().value[1];
+        if(canMove(guild, member, channel)) {
+          member.voice.setChannel(channel);
+        }
+      } catch (error) {
+        console.error(error)
+      }
+    }
+  });
+
+  const st = game.storytellerMember;
+
+  if(st && st.voice) {
+    const stChannels = guild.channels.cache.filter((channel) => channel.parent 
+      && channel.parentId === game.nightCategory
+      && !channel.permissionsFor(playerList[0]).has(PermissionsBitField.Flags.Connect)
+    );
+
+    if(stChannels.size > 0) {
+      try {
+        const channel = stChannels.entries().next().value[1];
+        if(canMove(guild, st, channel)) {
+          st.voice.setChannel(channel);
+        }
+      } catch (error) {
+        console.error(error)
+      }
+    }
+  }
+}
+
+export async function moveToDayChannel(client, game) {
+  const guild = client.guilds.cache.get(game.id);
+
+  const playerList = game.players.map(player => player.member).filter(member => member && member.voice);
+
+  if(playerList.length <= 0) {
+    return;
+  }
+
+  const dayChannel = guild.channels.cache.get(game.townSquare);
+
+  playerList.forEach((member) => {
+    if(member && member.voice) {
+      try {
+        if(canMove(guild, member, dayChannel)) {
+          member.voice.setChannel(dayChannel);
+        }
+      } catch (error) {
+        console.error(error)
+      }
+    }
+  });
+
+  const st = game.storytellerMember;
+
+  if(st && st.voice) {
+    try {
+      if(canMove(guild, st, dayChannel)) {
+        st.voice.setChannel(dayChannel);
+      }
+    } catch (error) {
+      console.error(error)
+    }
+  }
+}
+
+export function getRole(role, edition) {
+  return standardRoles.find(r => r.id === role) || (typeof edition === 'object' && edition.find(r => typeof r === 'object' && r.id === role));
+}
+
+export function getFabled(role) {
+  return fabled.find(r => r.id === role);
+}
+
+export function assignRoles(game, roles) {
+  // shuffle the roles!
+  const shuffled = roles.toSorted(() => 0.5 - Math.random());
+
+  // not used atm because we cant assign travellers BUT! will be used probably.
+  const currentPlayers = game.players.filter((player) => (!getRole(player.role, game.edition) || getRole(player.role, game.edition).team !== 'traveler')); 
+
+  if(roles.length !== currentPlayers.length) {
+    return false;
+  }
+  
+  currentPlayers.forEach((player, i) => {
+    // HAND THOSE ROLES OUT LIKE CANDY!
+    game.players[i].role = shuffled[i];
+  })
+
+  return true;
+};
+
+export function sendOutRoles(game) {
+  game.players.forEach((player) => {
+    const client = game.clients.get(player.id);
+
+    // if this happens wtf!
+    if (!client || !client.send) {
+      return;
+    }
+
+    client.send(JSON.stringify({
+      type: 'updatePlayer',
+      player: {
+        id: player.id,
+        role: player.role,
+      }
+    }));
+  });
+
+  const st = game.clients.get(game.storyteller);
+
+  if(st && st.send) {
+    st.send(JSON.stringify({
+      type: 'updatePlayerList',
+      players: game.players,
+    }));
+  }
+}
+
+function checkPlayer(player, game, initialHand, length) {
+  if (game.nomination.hand  !== initialHand) {
+    const client = game.clients.get(player.id);
+
+    if(client && client.send) {
+      client.send(JSON.stringify({
+        type: 'requestFinalVote',
+      }));
+    }
+
+    player.lockedAt = Date.now();
+
+    player.voteLocked = true;
+
+    const handMod = game.nomination.hand % length;
+
+    // we want to make sure no other messages intefered somehow
+    game.players[handMod] = player;
+  }
+
+  if ((game.nomination.hand % length !== initialHand) || initialHand === game.nomination.hand) {
+    game.nomination.hand = game.nomination.hand + 1;
+  }
+
+  game.clients.forEach((socket) => {
+    if (game.nomination.hand  !== initialHand) {
+      socket.send(JSON.stringify({
+        type: 'updatePlayer',
+        player: {
+          id: player.id,
+          handUp: player.handUp,
+          voteLocked: player.voteLocked,
+        }
+      }));
+    }
+
+    socket.send(JSON.stringify({
+      type: 'setHand',
+      hand: game.nomination.hand,
+      transition: game.nomination.transition,
+    }));
+  });
+
+  if (!game.players[game.nomination.hand % length].voteLocked) {
+    game.voteTimer = setTimeout(() => {
+      checkPlayer(game.players[game.nomination.hand % length], game, initialHand, length);
+    }, game.nomination.transition * 1000);
+  }
+  else {
+    game.nomination.running = false;
+    game.nomination.over = true;
+
+    const st = game.clients.get(game.storyteller);
+
+    if(st && st.send) {
+      st.send(JSON.stringify({
+        type: 'setNomination',
+        nomination: {
+          over: true,
+          running: false,
+        },
+      }));
+    }
+
+    game.voteInProgress = false;
+  }
+}
+
+export function runVote(game) {
+  if(!game.players[game.nomination.hand]) {
+    console.log('HOW DID WE GET HERE?');
+    return;
+  }
+
+  game.nomination.running = true;
+
+  const st = game.clients.get(game.storyteller);
+
+  if(st && st.send) {
+    st.send(JSON.stringify({
+      type: 'setNomination',
+      nomination: {
+        running: true,
+      },
+    }));
+  }
+
+  checkPlayer(game.players[game.nomination.hand], game, game.nomination.hand, game.players.length)
+}
+
+export function runVoteCountdown(game) {
+  game.clients.forEach((socket) => {
+    socket.send(JSON.stringify({
+      type: 'playCountdown',
+    }));
+  });
+
+  const st = game.clients.get(game.storyteller);
+
+  game.nomination.running = true;
+
+  if(st && st.send) {
+    st.send(JSON.stringify({
+      type: 'setNomination',
+      nomination: {
+        running: true,
+      },
+    }));
+  }
+
+  game.voteTimer = setTimeout(() => {
+    runVote(game);
+  }, 3000);
+}

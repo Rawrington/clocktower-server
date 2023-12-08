@@ -128,3 +128,13 @@ dist
 .yarn/build-state.yml
 .yarn/install-state.gz
 .pnp.*
+
+# sublime text
+*.sublime-project
+*.sublime-workspace
+
+# config file
+config.json
+
+# bot
+bot-storage.db
