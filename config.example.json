@@ -1,5 +1,9 @@
 {
   "token": "SECRET_TOKEN_HERE",
   "clientId": "BOT_CLIENT_ID_HERE",
-  "guildId": "GUILD_ID_FOR_COMMANDS"
+  "guildId": "GUILD_ID_FOR_COMMANDS",
+  "ssl": true,
+  "cert": "/path/to/cert.pem",
+  "key": "/path/to/private.key",
+  "port": 8443
 }

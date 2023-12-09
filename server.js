@@ -7,6 +7,7 @@ import sqlite3 from 'sqlite3';
 import { dirname } from 'path';
 import { fileURLToPath } from 'url';
 import WebSocket from 'ws';
+import https from 'https';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
@@ -74,7 +75,21 @@ for (const file of messagesFiles) {
 }
 
 // SERVER HANDLING CODE!
-const wss = new WebSocket.Server({ port: 7071,
+const sslOn = config.cert && config.key && config.ssl;
+
+const options = {}
+
+if (sslOn) {
+  options.cert = fs.readFileSync(config.cert);
+  options.key = fs.readFileSync(config.key);
+  console.log(options);
+  console.log("SSL ON");
+}
+
+const server = https.createServer(options);
+
+const wss = new WebSocket.Server({
+  ...(sslOn ? { server } : { port: 8080 }),
   /*verifyClient: info =>
     info.origin &&
     !!info.origin.match(
@@ -224,6 +239,10 @@ wss.on("close", () => {
   clearInterval(gameSync);
 });
 
+if (sslOn) {
+  server.listen(config.port);
+}
+ 
 const foldersPath = path.join(__dirname, 'commands');
 const commandFolders = fs.readdirSync(foldersPath);
 
