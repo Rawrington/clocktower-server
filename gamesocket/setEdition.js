@@ -70,12 +70,10 @@ function execute(ws, json, activeGames) {
     }
   }
 
-  const fabled = typeof json.edition === 'object' ? (json.edition.filter(role => getFabled(role) || typeof role === 'object' && role.team === 'fabled').map(role => typeof role === 'string' ? role : role.id)) : false;
+  // set fabled to any fabled listed on the script OR no fabled in play!
+  game.fabled = typeof json.edition === 'object' ? (json.edition.filter(role => getFabled(role) || typeof role === 'object' && role.team === 'fabled').map(role => typeof role === 'string' ? role : role.id)) : [];
 
-  if(fabled) {
-    game.fabled = fabled;
-  }
-
+  // filter out default fabled so they dont show up in the edition object on the client
   game.edition = typeof json.edition === 'object' ? json.edition.filter(role => !getFabled(role)) : json.edition;
 
   const message = {
