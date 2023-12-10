@@ -17,18 +17,24 @@ function execute(ws, json, activeGames) {
     return;
   }
 
-  if(assignRoles(game, json.selectedRoles)) {
-    sendOutRoles(game);
-    ws.send(JSON.stringify({
-      type: 'closeMenu',
-    }));
+  if (json.selectedRoles) {
+    if (assignRoles(game, json.selectedRoles)) {
+      sendOutRoles(game, json.sendRolesToPlayers);
+
+      ws.send(JSON.stringify({
+        type: 'closeMenu',
+      }));
+    }
+    else
+    {
+      ws.send(JSON.stringify({
+        type: 'showError',
+        error: 'Number of available players does not match number of roles selected!',
+      }))
+    }
   }
-  else
-  {
-    ws.send(JSON.stringify({
-      type: 'showError',
-      error: 'Number of available players does not match number of roles selected!',
-    }))
+  else {
+    sendOutRoles(game, json.sendRolesToPlayers);
   }
 };
 

@@ -76,6 +76,16 @@ function execute(ws, json, activeGames) {
   // filter out default fabled so they dont show up in the edition object on the client
   game.edition = typeof json.edition === 'object' ? json.edition.filter(role => !getFabled(role)) : json.edition;
 
+  game.customSpecials = typeof json.edition === 'object' ? (
+    json.edition.reduce((specialsArray, role) => {
+      if (typeof role === 'object' && role.id !== '_meta' && role.special) {
+        return specialsArray.concat(role.special);
+      }
+
+      return specialsArray;
+    }, [])
+  ) : [];
+
   const message = {
     type: 'setEdition',
     edition: json.edition,
@@ -84,12 +94,10 @@ function execute(ws, json, activeGames) {
   game.clients.forEach((socket) => {
     socket.send(JSON.stringify(message));
 
-    if(fabled) {
-      socket.send(JSON.stringify({
-        type: 'setFabled',
-        fabled: game.fabled,
-      }));
-    }
+    socket.send(JSON.stringify({
+      type: 'setFabled',
+      fabled: game.fabled,
+    }));
   });
 };
 

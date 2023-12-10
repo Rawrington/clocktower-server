@@ -40,7 +40,15 @@ function execute(ws, json, activeGames) {
     player.role = -1;
   });
 
-  game.nomination = {};
+  game.nomination = {
+    nominator: {},
+    nominated: {},
+    hand: -1,
+    open: false,
+    running: false,
+    over: false,
+  };
+  
   game.voteInProgress = false;
 
   game.clients.forEach((ws) => {

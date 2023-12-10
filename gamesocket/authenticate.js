@@ -1,5 +1,7 @@
 const name = 'authenticate';
 
+import { canSeeVotes } from '../helpers/gameFunctions.js';
+
 function execute(ws, json, activeGames, gameAuthTokens, timeout) {
   const authed = gameAuthTokens.get(json.token);
 
@@ -28,8 +30,8 @@ function execute(ws, json, activeGames, gameAuthTokens, timeout) {
             id: player.id,
             name: player.name,
             dead: player.dead,
-            handUp: player.handUp,
-            voteLocked: player.voteLocked,
+            handUp: (canSeeVotes(game.customSpecials, game.players) || authed.id === game.storyteller || authed.id === player.id) ? player.handUp : false,
+            voteLocked: (canSeeVotes(game.customSpecials, game.players) || authed.id === game.storyteller || authed.id === player.id) ?  player.voteLocked : false,
             usedGhostVote: player.usedGhostVote,
             marked: player.marked,
           };

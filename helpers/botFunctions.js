@@ -28,7 +28,6 @@ export function invitePlayer(client, auth, user, member, game, guildId, guildNam
             usedGhostVote: player.usedGhostVote,
             voteLocked: player.voteLocked,
             marked: player.marked,
-            role: player.id === user.id && -1,
           }
         }),
       }));

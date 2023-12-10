@@ -49,7 +49,7 @@ async function execute(interaction, db) {
   else {
     const newGame = {
       id: interaction.guildId,
-      players: [],
+      players: interaction.guildId === '1180188559769092216' ? testPlayers : [],
       nomination: {
         nominator: {},
         nominated: {},
@@ -66,6 +66,7 @@ async function execute(interaction, db) {
       edition: 'tb',
       votingHistory: [],
       night: true,
+      customSpecials: [],
     };
 
     newGame.clients = new Map();

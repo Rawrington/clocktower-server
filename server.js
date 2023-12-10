@@ -9,6 +9,8 @@ import { fileURLToPath } from 'url';
 import WebSocket from 'ws';
 import https from 'https';
 
+import { canSeeVotes } from './helpers/gameFunctions.js';
+
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
 // Open the database, mostly for the bot, the game is all stored in variables!
@@ -193,8 +195,8 @@ const gameSync = setInterval(() => {
               id: player.id,
               name: player.name,
               dead: player.dead,
-              handUp: player.handUp,
-              voteLocked: player.voteLocked,
+              handUp: (canSeeVotes(game.players, game.customSpecials) || sockIndex === game.storyteller || sockIndex === player.id) ? player.handUp : false,
+              voteLocked: (canSeeVotes(game.players, game.customSpecials) || sockIndex === game.storyteller || sockIndex === player.id) ?  player.voteLocked : false,
               usedGhostVote: player.usedGhostVote,
               marked: player.marked,
             };
@@ -280,6 +282,44 @@ client.on(Events.InteractionCreate, async interaction => {
     } else {
       await interaction.reply({ content: 'There was an error while executing this command!', ephemeral: true });
     }
+  }
+});
+
+client.on(Events.VoiceStateUpdate, async (oldState, newState) => {
+  const state = newState || oldState;
+
+  if (!state || !state.channel || !state.channelId || !state.id) return;
+
+  let currentGame = false;
+
+  for (let game of client.activeGames.values()) {
+    if (game.storyteller === state.id || game.players.some(player => player.id === state.id)) {
+      currentGame = game;
+      break;
+    }
+  }
+
+  if (!currentGame) return;
+
+  const members = newState.channel.members.map(member => member.id);
+
+  const oldMembers = oldState && oldState.channel && oldState.channel.members.map(member => member.id);
+
+  const st = currentGame.clients.get(currentGame.storyteller);
+
+  if (!st || !st.send) return;
+
+  if (members.includes(currentGame.storyteller)) {
+    st.send(JSON.stringify({
+      type: 'updateVoice',
+      members: members.filter(member => member !== currentGame.storyteller),
+    }));
+  }
+  else if (oldMembers.includes(currentGame.storyteller)) {
+    st.send(JSON.stringify({
+      type: 'updateVoice',
+      members: oldMembers.filter(member => member !== currentGame.storyteller),
+    }));
   }
 });
 

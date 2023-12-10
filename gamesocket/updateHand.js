@@ -1,5 +1,7 @@
 const name = 'updateHand';
 
+import { canSeeVotes } from '../helpers/gameFunctions.js';
+
 function execute(ws, json, activeGames) {
   const game = activeGames.get(json.gameId);
 
@@ -31,7 +33,8 @@ function execute(ws, json, activeGames) {
     },
   };
 
-  game.clients.forEach((socket) => {
+  game.clients.forEach((socket, id) => {
+    message.handUp = (canSeeVotes(game.players, game.customSpecials) || id === game.storyteller || id === player.id) ? player.handUp : false;
     socket.send(JSON.stringify(message));
   });
 };

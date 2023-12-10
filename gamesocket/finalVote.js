@@ -39,6 +39,9 @@ function execute(ws, json, activeGames) {
   };
 
   game.clients.forEach((socket) => {
+    message.handUp = (canSeeVotes(game.players, game.customSpecials) || id === game.storyteller || id === player.id) ? player.handUp : false;
+    message.voteLocked = (canSeeVotes(game.players, game.customSpecials) || id === game.storyteller || id === player.id) ? true : false;
+
     socket.send(JSON.stringify(message));
   });
 };

@@ -1,5 +1,6 @@
 import standardRoles from './roles.json' assert { type: 'json' };
 import fabled from './fabled.json' assert { type: 'json' };
+import specials from './specials.json' assert { type: 'json' };
 import { PermissionsBitField } from 'discord.js';
 
 // this is taken from Moveer and edited, it just prevents unneccesaary errors and tells us what went wrong.
@@ -144,6 +145,14 @@ export async function moveToDayChannel(client, game) {
   }
 }
 
+export function getSpecial(customSpecials, role, type, name) {
+  return specials.find(special => special.role === role && special.type === type && special.name === name) || customSpecials.find(special => special.role === role && special.type === type && special.name === name);
+}
+
+export function canSeeVotes(players, customSpecials) {
+  return !players.some(player => getSpecial(customSpecials, player.role, 'vote', 'hidden'));
+}
+
 export function getRole(role, edition) {
   return standardRoles.find(r => r.id === role) || (typeof edition === 'object' && edition.find(r => typeof r === 'object' && r.id === role));
 }
@@ -171,23 +180,25 @@ export function assignRoles(game, roles) {
   return true;
 };
 
-export function sendOutRoles(game) {
-  game.players.forEach((player) => {
-    const client = game.clients.get(player.id);
+export function sendOutRoles(game, sendToAll) {
+  if (sendToAll) {
+    game.players.forEach((player) => {
+      const client = game.clients.get(player.id);
 
-    // if this happens wtf!
-    if (!client || !client.send) {
-      return;
-    }
-
-    client.send(JSON.stringify({
-      type: 'updatePlayer',
-      player: {
-        id: player.id,
-        role: player.role,
+      // if this happens wtf!
+      if (!client || !client.send) {
+        return;
       }
-    }));
-  });
+
+      client.send(JSON.stringify({
+        type: 'updatePlayer',
+        player: {
+          id: player.id,
+          role: player.role,
+        }
+      }));
+    });
+  }
 
   const st = game.clients.get(game.storyteller);
 
@@ -199,7 +210,7 @@ export function sendOutRoles(game) {
   }
 }
 
-function checkPlayer(player, game, initialHand, length) {
+function checkPlayer(player, game, initialHand, length, visibleVote) {
   if (game.nomination.hand  !== initialHand) {
     const client = game.clients.get(player.id);
 
@@ -223,14 +234,14 @@ function checkPlayer(player, game, initialHand, length) {
     game.nomination.hand = game.nomination.hand + 1;
   }
 
-  game.clients.forEach((socket) => {
+  game.clients.forEach((socket, id) => {
     if (game.nomination.hand  !== initialHand) {
       socket.send(JSON.stringify({
         type: 'updatePlayer',
         player: {
           id: player.id,
-          handUp: player.handUp,
-          voteLocked: player.voteLocked,
+          handUp: (visibleVote || id === game.storyteller || id === player.id) ? player.handUp : false,
+          voteLocked: (visibleVote || id === game.storyteller || id === player.id) ? player.voteLocked : false,
         }
       }));
     }
@@ -244,7 +255,7 @@ function checkPlayer(player, game, initialHand, length) {
 
   if (!game.players[game.nomination.hand % length].voteLocked) {
     game.voteTimer = setTimeout(() => {
-      checkPlayer(game.players[game.nomination.hand % length], game, initialHand, length);
+      checkPlayer(game.players[game.nomination.hand % length], game, initialHand, length, visibleVote);
     }, game.nomination.transition * 1000);
   }
   else {
@@ -286,7 +297,7 @@ export function runVote(game) {
     }));
   }
 
-  checkPlayer(game.players[game.nomination.hand], game, game.nomination.hand, game.players.length)
+  checkPlayer(game.players[game.nomination.hand], game, game.nomination.hand, game.players.length, canSeeVotes(game.players, game.customSpecials))
 }
 
 export function runVoteCountdown(game) {
