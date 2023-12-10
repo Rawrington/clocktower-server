@@ -19,12 +19,14 @@ function execute(ws, json, activeGames, gameAuthTokens, timeout, client) {
 
   game.night = json.night;
 
-  if(game.night) {
-    moveToNightChannels(client, game);
-  }
-  else
-  {
-    moveToDayChannel(client, game);
+  if(json.discord) {
+    if(game.night) {
+      moveToNightChannels(client, game);
+    }
+    else
+    {
+      moveToDayChannel(client, game);
+    }
   }
 
   const message = {

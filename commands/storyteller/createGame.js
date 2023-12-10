@@ -65,7 +65,8 @@ async function execute(interaction, db) {
       storytellerMember: interaction.member,
       edition: 'tb',
       votingHistory: [],
-      night: true,
+      night: false,
+      daytracker: 0,
       customSpecials: [],
     };
 

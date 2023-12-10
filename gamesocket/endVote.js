@@ -26,11 +26,13 @@ function execute(ws, json, activeGames) {
   if ((!game.voteInProgress || game.nomination.over) && json.result) {
     const voters = game.players.filter(player => player.handUp).map(player => player.name);
 
+    const nomPlayer = game.players[game.nomination.nominated.index];
+
     game.votingHistory.push({
       time: Date.now(),
       nominator: game.nomination.nominator.name,
       nominated: game.nomination.nominated.name,
-      type: 'Execution',
+      type: (nomPlayer && nomPlayer.traveler) ? 'Exile' : 'Execution',
       votes: voters.length,
       majority: Math.ceil(game.players.filter(player => !player.dead).length / 2),
       voters: voters,

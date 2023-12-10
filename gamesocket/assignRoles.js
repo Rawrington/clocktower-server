@@ -28,7 +28,7 @@ function execute(ws, json, activeGames) {
     else
     {
       ws.send(JSON.stringify({
-        type: 'showError',
+        type: 'storytellerAlert',
         error: 'Number of available players does not match number of roles selected!',
       }))
     }

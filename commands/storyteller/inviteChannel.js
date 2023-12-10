@@ -49,7 +49,7 @@ async function execute(interaction, db) {
     }
   }
 
-  await interaction.reply({ content: 'Invited all members in ${channel} to the game.', ephemeral: true });
+  await interaction.reply({ content: `Invited all members in ${channel} to the game.`, ephemeral: true });
 };
 
 export { data, execute };

@@ -31,6 +31,19 @@ function execute(ws, json, activeGames) {
     ...json.player,
   };
 
+  if (json.reveal && game.players[playerIndex].traveler) {
+    game.clients.forEach((socket) => {
+      socket.send(JSON.stringify({
+        type: 'updatePlayer',
+        player: {
+          id: json.player.id,
+          role: game.players[playerIndex].role,
+        }
+      }));
+    });
+    return
+  }
+
   // this is a check to see if any PUBLICLY KNOWN VALUES changed - less react rerenders on the client!
   if (
     oldPlayer.name === game.players[playerIndex].name 

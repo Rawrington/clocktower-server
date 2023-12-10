@@ -34,6 +34,10 @@ function execute(ws, json, activeGames, gameAuthTokens, timeout) {
             voteLocked: (canSeeVotes(game.customSpecials, game.players) || authed.id === game.storyteller || authed.id === player.id) ?  player.voteLocked : false,
             usedGhostVote: player.usedGhostVote,
             marked: player.marked,
+            ...(game.storyteller === authed.id ? { 
+              hasGrim: player.hasGrim,
+              role: player.role,
+            } : (player.traveler ? {role: player.role} : {})),
           };
 
           return playerObj;
@@ -54,6 +58,24 @@ function execute(ws, json, activeGames, gameAuthTokens, timeout) {
     }));
 
     ws.send(JSON.stringify(message));
+
+    const player = game.players.find(player => player.id === authed.id);
+
+    if (player && player.hasGrim && game.stNotes) {
+      ws.send(JSON.stringify({
+        type: 'storytellerGrim',
+        players: game.players,
+        notes: game.stNotes,
+      }));
+    }
+    else
+    {
+      ws.send(JSON.stringify({
+        type: 'storytellerGrim',
+        players: false,
+        notes: false,
+      }));
+    }
 
     clearTimeout(timeout);
   }

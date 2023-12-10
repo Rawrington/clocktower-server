@@ -1,5 +1,7 @@
 const name = 'finalVote';
 
+import { canSeeVotes } from '../helpers/gameFunctions.js';
+
 function execute(ws, json, activeGames) {
   const game = activeGames.get(json.gameId);
 

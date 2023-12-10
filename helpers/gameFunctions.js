@@ -150,7 +150,37 @@ export function getSpecial(customSpecials, role, type, name) {
 }
 
 export function canSeeVotes(players, customSpecials) {
-  return !players.some(player => getSpecial(customSpecials, player.role, 'vote', 'hidden'));
+  return !players.some(player => !player.dead && getSpecial(customSpecials, player.role, 'vote', 'hidden'));
+}
+
+export function cleanUpShowGrim(members, game, st) {
+  members.forEach(member => {
+    const player = game.players.find(player => player.id == member);
+
+    if (player && player.hasGrim) {
+      player.hasGrim = false;
+
+      const pSock = game.clients.get(member);
+
+      if (pSock && pSock.send) {
+        pSock.send(JSON.stringify({
+          type: 'storytellerGrim',
+          players: false,
+          notes: false,
+        }));
+      }
+
+      if (st && st.send) {
+        st.send(JSON.stringify({
+          type: 'updatePlayer',
+          player: {
+            id: player.id,
+            hasGrim: false,
+          },
+        }));
+      }
+    }
+  });
 }
 
 export function getRole(role, edition) {

@@ -27,9 +27,9 @@ function execute(ws, json, activeGames) {
     clearTimeout(game.currentGameTimerWarning);
   }
 
-  game.pausedTimer = game.timer + (ws.connectionTime * 1000);
+  game.pausedTimer = game.timer - Date.now();
 
-  const diffy = (game.timer - Date.now()) / 1000;
+  const diffy = game.pausedTimer / 1000;
 
   const minutes = Math.floor(diffy / 60);
 

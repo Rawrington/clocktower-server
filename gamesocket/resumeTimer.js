@@ -27,7 +27,7 @@ function execute(ws, json, activeGames) {
     clearTimeout(game.currentGameTimerWarning);
   }
 
-  game.timer = game.pausedTimer;
+  game.timer = Date.now() + game.pausedTimer;
   game.pausedTimer = false;
 
   const timer = game.timer - Date.now();

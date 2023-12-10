@@ -9,7 +9,7 @@ import { fileURLToPath } from 'url';
 import WebSocket from 'ws';
 import https from 'https';
 
-import { canSeeVotes } from './helpers/gameFunctions.js';
+import { canSeeVotes, cleanUpShowGrim } from './helpers/gameFunctions.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
@@ -205,7 +205,7 @@ const gameSync = setInterval(() => {
           }),
         edition: game.edition,
         nomination: game.nomination,
-        timer: game.timer + (sock.connectionTime * 1000),
+        timer: typeof game.timer === 'string' ? game.timer : (game.timer + (sock.connectionTime * 1000)),
         night: game.night,
         fabled: game.fabled,
         votingHistory: game.votingHistory,
@@ -290,14 +290,7 @@ client.on(Events.VoiceStateUpdate, async (oldState, newState) => {
 
   if (!state || !state.channel || !state.channelId || !state.id) return;
 
-  let currentGame = false;
-
-  for (let game of client.activeGames.values()) {
-    if (game.storyteller === state.id || game.players.some(player => player.id === state.id)) {
-      currentGame = game;
-      break;
-    }
-  }
+  const currentGame = client.activeGames.get(state.guild && state.guild.id);
 
   if (!currentGame) return;
 
@@ -307,19 +300,35 @@ client.on(Events.VoiceStateUpdate, async (oldState, newState) => {
 
   const st = currentGame.clients.get(currentGame.storyteller);
 
-  if (!st || !st.send) return;
-
   if (members.includes(currentGame.storyteller)) {
-    st.send(JSON.stringify({
-      type: 'updateVoice',
-      members: members.filter(member => member !== currentGame.storyteller),
-    }));
+    if(st && st.send) {
+      st.send(JSON.stringify({
+        type: 'updateVoice',
+        members: members.filter(member => member !== currentGame.storyteller),
+      }));
+    }
+
+    cleanUpShowGrim(oldMembers ? oldMembers : [], currentGame, st);
   }
   else if (oldMembers.includes(currentGame.storyteller)) {
-    st.send(JSON.stringify({
-      type: 'updateVoice',
-      members: oldMembers.filter(member => member !== currentGame.storyteller),
-    }));
+    if(st && st.send) {
+      st.send(JSON.stringify({
+        type: 'updateVoice',
+        members: oldMembers.filter(member => member !== currentGame.storyteller),
+      }));
+    }
+
+    cleanUpShowGrim(members, currentGame, st);
+  }
+  else if (oldState && oldMembers && oldState.id === currentGame.storyteller && !newState) {
+    if(st && st.send) {
+      st.send(JSON.stringify({
+        type: 'updateVoice',
+        members: [],
+      }));
+    }
+
+    cleanUpShowGrim(oldMembers, currentGame, st);
   }
 });
 

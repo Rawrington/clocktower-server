@@ -13,5 +13,11 @@
     "role": "organgrinder",
     "type": "vote",
     "name": "hidden"
+  },
+  {
+    "role": "spy",
+    "type": "signal",
+    "name": "grimoire",
+    "time": "night"
   }
 ]
