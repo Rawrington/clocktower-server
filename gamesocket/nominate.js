@@ -34,17 +34,13 @@ function execute(ws, json, activeGames) {
     name: nominatorIndex >= 0 ? (game.players[nominatorIndex].name) : (json.nominator),
   };
 
-  game.nomination.hand = nominatorIndex;
+  game.nomination.hand = nominatedIndex;
   game.nomination.running = false;
   game.nomination.over = false;
 
   const message = {
     type: 'setNomination',
-    nomination: {
-      ...game.nomination,
-      over: false,
-      running: false,
-    },
+    nomination: game.nomination,
   };
 
   game.clients.forEach((socket) => {

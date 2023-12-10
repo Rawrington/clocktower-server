@@ -219,7 +219,8 @@ const gameSync = setInterval(() => {
 
 const interval = setInterval(() => {
   wss.clients.forEach((ws) => {
-    if (ws.isAlive === false) {
+    if (ws.isAlive === false && ws.counter > 2) {
+
       client.activeGames.forEach((game) => {
         game.clients.forEach((sock, sockIndex) => {
           if (sock === ws) {
@@ -228,8 +229,11 @@ const interval = setInterval(() => {
         });
       });
       return ws.terminate();
+    } else if (ws.isAlive) {
+      ws.counter = 0;
     }
     ws.isAlive = false;
+    ws.counter = ws.counter + 1;
     ws.ping(() => {});
   });
 }, 30000);
