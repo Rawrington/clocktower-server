@@ -1,6 +1,12 @@
 const name = 'endVote';
 
 function execute(ws, json, activeGames) {
+  if (typeof json.gameId !== 'string' || typeof json.myId !== 'string') {
+    return;
+  }
+
+  // all values are booleans so let endVote make phone calls, who gives a shit anymore.
+
   const game = activeGames.get(json.gameId);
 
   if (!game) {

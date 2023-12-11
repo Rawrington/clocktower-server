@@ -1,6 +1,15 @@
 const name = 'nominate';
 
 function execute(ws, json, activeGames) {
+  if (typeof json.gameId !== 'string' || typeof json.myId !== 'string') {
+    return;
+  }
+
+  // nominator and nominated HAVE to be declared strings!
+  if(typeof json.nominator !== 'string' || typeof json.nominated !== 'string') {
+    return;
+  }
+
   const game = activeGames.get(json.gameId);
 
   if (!game) {

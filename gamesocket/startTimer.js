@@ -1,6 +1,14 @@
 const name = 'startTimer';
 
 function execute(ws, json, activeGames) {
+  if (typeof json.gameId !== 'string' || typeof json.myId !== 'string') {
+    return;
+  }
+
+  if (isNaN(json.minutes) || isNaN(json.seconds)) {
+    return;
+  }
+
   const game = activeGames.get(json.gameId);
 
   if (!game) {
@@ -25,7 +33,7 @@ function execute(ws, json, activeGames) {
 
   game.pausedTimer = false;
 
-  const timer = json.minutes * 60000 + json.seconds * 1000;
+  const timer = Number(json.minutes) * 60000 + Number(json.seconds) * 1000;
 
   game.timer = Date.now() + timer;
 

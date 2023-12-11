@@ -1,6 +1,10 @@
 const name = 'clearVotingHistory';
 
 function execute(ws, json, activeGames) {
+  if (typeof json.gameId !== 'string' || typeof json.myId !== 'string') {
+    return;
+  }
+  
   const game = activeGames.get(json.gameId);
 
   if (!game) {

@@ -3,6 +3,10 @@ import { moveToDayChannel } from '../helpers/gameFunctions.js';
 const name = 'summonToTown';
 
 function execute(ws, json, activeGames, gameAuthTokens, timeout, client) {
+  if (typeof json.gameId !== 'string' || typeof json.myId !== 'string') {
+    return;
+  }
+  
   const game = activeGames.get(json.gameId);
 
   if (!game) {

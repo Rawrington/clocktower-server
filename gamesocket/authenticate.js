@@ -3,9 +3,11 @@ const name = 'authenticate';
 import { canSeeVotes } from '../helpers/gameFunctions.js';
 
 function execute(ws, json, activeGames, gameAuthTokens, timeout) {
+  // now: number, token: string
+
   const authed = gameAuthTokens.get(json.token);
 
-  if (authed) {
+  if (authed && !isNaN(json.now) && typeof json.token === 'string') {
     const game = activeGames.get(authed.game);
 
     if(!game) {
@@ -19,7 +21,13 @@ function execute(ws, json, activeGames, gameAuthTokens, timeout) {
       client.close(); //remove duplicate client
     }
 
-    ws.connectionTime = Math.floor((json.now - ws.connectionTime) / 1000);
+    // already authenticated
+    if(client && client === ws) {
+      return;
+    }
+
+    // coerce all input numbers to make sure they work properly.
+    ws.connectionTime = Math.floor((Number(json.now) - ws.connectionTime) / 1000);
 
     game.clients.set(authed.id, ws);
 

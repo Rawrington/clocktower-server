@@ -3,6 +3,10 @@ const name = 'showGrim';
 import { getSpecial } from '../helpers/gameFunctions.js';
 
 function execute(ws, json, activeGames) {
+  if (typeof json.gameId !== 'string' || typeof json.myId !== 'string') {
+    return;
+  }
+
   const game = activeGames.get(json.gameId);
 
   if (!game) {
@@ -17,13 +21,15 @@ function execute(ws, json, activeGames) {
     return;
   }
 
+  if (typeof json.player !== 'string') {
+    return;
+  }
+
   const player = game.players.find(player => player.id === json.player);
 
   if(!player) {
     return;
   }
-
-  console.log('psock');
 
   const pSock = game.clients.get(player.id);
 

@@ -1,6 +1,52 @@
 const name = 'updatePlayer';
 
+import Ajv from 'ajv';
+
+const ajv = new Ajv({ removeAdditional: true });
+
+const schema = {
+  type: 'object',
+  properties: {
+    id: {
+      type: 'string',
+    },
+    role: {
+      type: ['string', 'number'],
+    },
+    dead: {
+      type: 'boolean',
+    },
+    handUp: {
+      type: 'boolean',
+    },
+    voteLocked: {
+      type: 'boolean',
+    },
+    usedGhostVote: {
+      type: 'boolean',
+    },
+    marked: {
+      type: 'boolean',
+    },
+    traveler: {
+      type: 'boolean',
+    },
+  },
+  required: ['id'],
+  additionalProperties: false,
+};
+
+const validate = ajv.compile(schema);
+
 function execute(ws, json, activeGames) {
+  if (typeof json.gameId !== 'string' || typeof json.myId !== 'string') {
+    return;
+  }
+
+  if(!json.player || typeof json.player !== 'object' || !json.player.id) {
+    return;
+  }
+
   const game = activeGames.get(json.gameId);
 
   if (!game) {
@@ -12,6 +58,12 @@ function execute(ws, json, activeGames) {
   }
 
   if(json.myId != game.storyteller) {
+    return;
+  }
+
+  if(!validate(json.player)) {
+    console.log('failed validation');
+    console.log(validate.errors);
     return;
   }
 

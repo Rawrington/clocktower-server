@@ -1,6 +1,10 @@
 const name = 'setFabled';
 
 function execute(ws, json, activeGames) {
+  if (typeof json.gameId !== 'string' || typeof json.myId !== 'string') {
+    return;
+  }
+
   const game = activeGames.get(json.gameId);
 
   if (!game) {
@@ -13,6 +17,17 @@ function execute(ws, json, activeGames) {
 
   if(json.myId != game.storyteller) {
     return;
+  }
+
+  if (typeof json.fabled !== 'object' || !Array.isArray(json.fabled)) {
+    return;
+  }
+
+  for (const role of json.fabled) {
+    // the client performs role verification we just have to confirm the roles are actually well strings to avoid errors!
+    if (typeof role !== 'string') {
+      return;
+    }
   }
 
   game.fabled = json.fabled;

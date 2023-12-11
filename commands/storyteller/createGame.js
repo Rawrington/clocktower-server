@@ -3,31 +3,31 @@ import { nanoid } from 'nanoid'
 
 const testPlayers = [
   {
-    id: 1,
+    id: '1',
     name: 'Test1',
   },
   {
-    id: 2,
+    id: '2',
     name: 'Test2',
   },
   {
-    id: 3,
+    id: '3',
     name: 'Test3',
   },
   {
-    id: 4,
+    id: '4',
     name: 'Test4',
   },
   {
-    id: 5,
+    id: '5',
     name: 'Test5',
   },
   {
-    id: 6,
+    id: '6',
     name: 'Test6',
   },
   {
-    id: 7,
+    id: '7',
     name: 'Test7',
   },
 ];

@@ -1,6 +1,11 @@
 const name = 'pauseTimer';
 
 function execute(ws, json, activeGames) {
+  // note: while ignoring these not being strings is acceptable behavior too (it wont error) we save computation time if the client tries to send garbage (or some bad actor does).
+  if (typeof json.gameId !== 'string' || typeof json.myId !== 'string') {
+    return;
+  }
+
   const game = activeGames.get(json.gameId);
 
   if (!game) {

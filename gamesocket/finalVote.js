@@ -3,6 +3,12 @@ const name = 'finalVote';
 import { canSeeVotes } from '../helpers/gameFunctions.js';
 
 function execute(ws, json, activeGames) {
+  if (typeof json.gameId !== 'string' || typeof json.myId !== 'string') {
+    return;
+  }
+
+  // all other values are booleans so...
+
   const game = activeGames.get(json.gameId);
 
   if (!game) {
