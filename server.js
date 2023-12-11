@@ -108,9 +108,11 @@ wss.on('connection', (ws) => {
   ws.connectionTime = Date.now();
 
   ws.isAlive = true;
+  ws.deadCounter = 0;
 
   ws.on("pong", () => {
     ws.isAlive = true;
+    ws.deadCounter = 0;
   });
 
   ws.on('message', (message) => {
@@ -219,8 +221,7 @@ const gameSync = setInterval(() => {
 
 const interval = setInterval(() => {
   wss.clients.forEach((ws) => {
-    if (ws.isAlive === false && ws.counter > 2) {
-
+    if (ws.isAlive === false && ws.deadCounter > 2) {
       client.activeGames.forEach((game) => {
         game.clients.forEach((sock, sockIndex) => {
           if (sock === ws) {
@@ -229,11 +230,9 @@ const interval = setInterval(() => {
         });
       });
       return ws.terminate();
-    } else if (ws.isAlive) {
-      ws.counter = 0;
     }
     ws.isAlive = false;
-    ws.counter = ws.counter + 1;
+    ws.deadCounter = ws.deadCounter + 1;
     ws.ping(() => {});
   });
 }, 30000);
@@ -314,7 +313,7 @@ client.on(Events.VoiceStateUpdate, async (oldState, newState) => {
 
     cleanUpShowGrim(oldMembers ? oldMembers : [], currentGame, st);
   }
-  else if (oldMembers.includes(currentGame.storyteller)) {
+  else if (oldMembers && oldMembers.includes(currentGame.storyteller)) {
     if(st && st.send) {
       st.send(JSON.stringify({
         type: 'updateVoice',
