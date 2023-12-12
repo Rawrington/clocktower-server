@@ -52,6 +52,8 @@ function execute(ws, json, activeGames) {
     running: false,
     over: false,
   };
+
+  game.daytracker = 0;
   
   game.voteInProgress = false;
 

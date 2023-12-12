@@ -62,8 +62,6 @@ function execute(ws, json, activeGames) {
   }
 
   if(!validate(json.player)) {
-    console.log('failed validation');
-    console.log(validate.errors);
     return;
   }
 
@@ -94,6 +92,10 @@ function execute(ws, json, activeGames) {
       }));
     });
     return
+  }
+
+  if(oldPlayer.role !== game.players[playerIndex].role) {
+    game.players[playerIndex].firstNight = true;
   }
 
   // this is a check to see if any PUBLICLY KNOWN VALUES changed - less react rerenders on the client!

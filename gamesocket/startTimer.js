@@ -53,7 +53,7 @@ function execute(ws, json, activeGames) {
         game.clients.forEach((socket) => {
           socket.send(JSON.stringify({
             type: 'storytellerAlert',
-            alert: 'The timer is ending in 10 seconds!',
+            alert: 'The Timer is ending in 10 seconds!',
           }));
         });
       }

@@ -23,6 +23,26 @@ function execute(ws, json, activeGames, gameAuthTokens, timeout, client) {
 
   game.night = json.night;
 
+  if (game.night) {
+    game.daytracker = game.daytracker + 1;
+
+    if (game.daytracker > 1 && game.players.some(player => player.firstNight)) {
+      game.players.forEach(player => {
+        player.firstNight = false;
+      });
+
+      ws.send(JSON.stringify({
+        type: 'updatePlayerList',
+        players: game.players.map((player) => {
+          return {
+            id: player.id,
+            firstNight: false,
+          }
+        }),
+      }));
+    }
+  }
+
   if(json.discord) {
     if(game.night) {
       moveToNightChannels(client, game);
@@ -36,6 +56,7 @@ function execute(ws, json, activeGames, gameAuthTokens, timeout, client) {
   const message = {
     type: 'setNight',
     night: json.night,
+    dayNumber: game.daytracker,
   };
 
   game.clients.forEach((socket) => {

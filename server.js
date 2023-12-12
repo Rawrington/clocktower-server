@@ -201,6 +201,7 @@ const gameSync = setInterval(() => {
               voteLocked: (canSeeVotes(game.players, game.customSpecials) || sockIndex === game.storyteller || sockIndex === player.id) ?  player.voteLocked : false,
               usedGhostVote: player.usedGhostVote,
               marked: player.marked,
+              firstNight: sockIndex === game.storyteller ? player.firstNight : false,
             };
 
             return playerObj;
@@ -212,6 +213,7 @@ const gameSync = setInterval(() => {
         fabled: game.fabled,
         votingHistory: game.votingHistory,
         gameId: index,
+        dayNumber: game.daytracker,
       }
 
       sock.send(JSON.stringify(message));

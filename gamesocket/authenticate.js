@@ -45,6 +45,7 @@ function execute(ws, json, activeGames, gameAuthTokens, timeout) {
             ...(game.storyteller === authed.id ? { 
               hasGrim: player.hasGrim,
               role: player.role,
+              firstNight: player.firstNight,
             } : (player.traveler ? {role: player.role} : {})),
           };
 
@@ -57,6 +58,7 @@ function execute(ws, json, activeGames, gameAuthTokens, timeout) {
       fabled: game.fabled,
       votingHistory: game.votingHistory,
       gameId: authed.game,
+      dayNumber: game.daytracker,
     }
 
     ws.send(JSON.stringify({

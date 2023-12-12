@@ -145,6 +145,20 @@ export async function moveToDayChannel(client, game) {
   }
 }
 
+export async function moveStToPlayer(client, game, st, member) {
+  const guild = await client.guilds.fetch(game.id);
+
+  if(st && st.voice && member && member.voice && member.voice.channel) {
+    try {
+      if(canMove(guild, st, member.voice.channel)) {
+        st.voice.setChannel(member.voice.channel);
+      }
+    } catch (error) {
+      console.error(error)
+    }
+  }
+}
+
 export function getSpecial(customSpecials, role, type, name) {
   return specials.find(special => special.role === role && special.type === type && special.name === name) || customSpecials.find(special => special.role === role && special.type === type && special.name === name);
 }
@@ -205,6 +219,7 @@ export function assignRoles(game, roles) {
   currentPlayers.forEach((player, i) => {
     // HAND THOSE ROLES OUT LIKE CANDY!
     game.players[i].role = shuffled[i];
+    game.players[i].firstNight = true;
   })
 
   return true;
