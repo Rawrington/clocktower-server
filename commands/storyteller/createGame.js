@@ -49,7 +49,7 @@ async function execute(interaction, db) {
   else {
     const newGame = {
       id: interaction.guildId,
-      players: interaction.guildId === '1180188559769092216' ? testPlayers : [],
+      players: interaction.guildId === '1180188559769092216' ? [...testPlayers] : [],
       nomination: {
         nominator: {},
         nominated: {},

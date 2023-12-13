@@ -219,7 +219,7 @@ const gameSync = setInterval(() => {
       sock.send(JSON.stringify(message));
     });
   });
-}, 10000);
+}, 20000);
 
 const interval = setInterval(() => {
   wss.clients.forEach((ws) => {

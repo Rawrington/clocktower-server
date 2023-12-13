@@ -1,3 +1,5 @@
+import { canSeeVotes } from './gameFunctions.js';
+
 export function invitePlayer(client, auth, user, member, game, guildId, guildName) {
   const url = 'https://zachevil.online/?token=' + auth;
 
@@ -16,7 +18,7 @@ export function invitePlayer(client, auth, user, member, game, guildId, guildNam
 
     game.players.push(newPlayer);
 
-    game.clients.forEach((ws) => {
+    game.clients.forEach((ws, id) => {
       ws.send(JSON.stringify({
         type: 'updatePlayerList',
         players: game.players.map((player) => {
@@ -24,9 +26,9 @@ export function invitePlayer(client, auth, user, member, game, guildId, guildNam
             id: player.id,
             name: player.name,
             dead: player.dead,
-            handUp: player.handUp,
+            handUp: (canSeeVotes(game.players, game.customSpecials) || id === game.storyteller || id === player.id) ? player.handUp : false,
             usedGhostVote: player.usedGhostVote,
-            voteLocked: player.voteLocked,
+            voteLocked: (canSeeVotes(game.players, game.customSpecials) || id === game.storyteller || id === player.id) ? player.voteLocked : false,
             marked: player.marked,
           }
         }),

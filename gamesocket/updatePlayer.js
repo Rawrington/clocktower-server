@@ -1,5 +1,7 @@
 const name = 'updatePlayer';
 
+import { canSeeVotes } from '../helpers/gameFunctions.js';
+
 import Ajv from 'ajv';
 
 const ajv = new Ajv({ removeAdditional: true });
@@ -125,7 +127,9 @@ function execute(ws, json, activeGames) {
     }
   };
 
-  game.clients.forEach((socket) => {
+  game.clients.forEach((socket, id) => {
+    message.player.handUp = (canSeeVotes(game.players, game.customSpecials) || id === game.storyteller) ? game.players[playerIndex].handUp : false;
+    message.player.voteLocked = (canSeeVotes(game.players, game.customSpecials) || id === game.storyteller) ? game.players[playerIndex].voteLocked : false;
     socket.send(JSON.stringify(message));
   });
 };

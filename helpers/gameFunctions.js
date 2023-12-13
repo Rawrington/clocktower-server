@@ -247,10 +247,25 @@ export function sendOutRoles(game, sendToAll) {
 
   const st = game.clients.get(game.storyteller);
 
+  // made sure we DONT send the info on a discord client to someone by mistake
+
   if(st && st.send) {
     st.send(JSON.stringify({
       type: 'updatePlayerList',
-      players: game.players,
+      players: game.players.map(player => {
+        return {
+          id: player.id,
+          name: player.name,
+          dead: player.dead,
+          handUp: player.handUp,
+          voteLocked: player.voteLocked,
+          usedGhostVote: player.usedGhostVote,
+          marked: player.marked,
+          hasGrim: player.hasGrim,
+          role: player.role,
+          firstNight: player.firstNight,
+        };
+      }),
     }));
   }
 }

@@ -59,6 +59,7 @@ function execute(ws, json, activeGames, gameAuthTokens, timeout) {
       votingHistory: game.votingHistory,
       gameId: authed.game,
       dayNumber: game.daytracker,
+      firstConnect: client && client !== ws ? false : true,
     }
 
     ws.send(JSON.stringify({
