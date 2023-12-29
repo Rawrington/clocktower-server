@@ -16,8 +16,12 @@ function execute(ws, json, activeGames, gameAuthTokens, timeout) {
 
     const client = game.clients.get(authed.id);
 
+    ws.reconnection = true;
+
     if(client && client !== ws && client.close) {
       console.log(`Closing old connection for user discord id: ${authed.id}`);
+      ws.authenticated = false;
+      ws.reconnection = true;
       client.close(); //remove duplicate client
     }
 
@@ -60,7 +64,7 @@ function execute(ws, json, activeGames, gameAuthTokens, timeout) {
       votingHistory: game.votingHistory,
       gameId: authed.game,
       dayNumber: game.daytracker,
-      firstConnect: client && client !== ws ? false : true,
+      firstConnect: ws.reconnection ? false : true,
     }
 
     ws.send(JSON.stringify({
