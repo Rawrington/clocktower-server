@@ -16,7 +16,7 @@ function execute(ws, json, activeGames, gameAuthTokens, timeout) {
 
     const client = game.clients.get(authed.id);
 
-    ws.reconnection = true;
+    ws.reconnection = false;
 
     if(client && client !== ws && client.close) {
       console.log(`Closing old connection for user discord id: ${authed.id}`);
