@@ -163,8 +163,8 @@ export function getSpecial(customSpecials, role, type, name) {
   return specials.find(special => special.role === role && special.type === type && special.name === name) || customSpecials.find(special => special.role === role && special.type === type && special.name === name);
 }
 
-export function canSeeVotes(players, customSpecials) {
-  return !players.some(player => !player.dead && getSpecial(customSpecials, player.role, 'vote', 'hidden'));
+export function canSeeVotes(players, customSpecials, forceHidden) {
+  return forceHidden ? (forceHidden === 'forcedisable' && true) : (!players.some(player => !player.dead && getSpecial(customSpecials, player.role, 'vote', 'hidden')));
 }
 
 export function cleanUpShowGrim(members, game, st) {
@@ -357,7 +357,7 @@ export function runVote(game) {
     }));
   }
 
-  checkPlayer(game.players[game.nomination.hand], game, game.nomination.hand, game.players.length, canSeeVotes(game.players, game.customSpecials))
+  checkPlayer(game.players[game.nomination.hand], game, game.nomination.hand, game.players.length, canSeeVotes(game.players, game.customSpecials, game.forceHidden))
 }
 
 export function runVoteCountdown(game) {

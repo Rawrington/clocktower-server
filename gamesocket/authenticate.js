@@ -21,15 +21,16 @@ function execute(ws, json, activeGames, gameAuthTokens, timeout) {
       client.close(); //remove duplicate client
     }
 
+    game.clients.set(authed.id, ws);
+
     // already authenticated
-    if(client && client === ws) {
+    if(client && ws.authenticated) {
       return;
     }
 
     // coerce all input numbers to make sure they work properly.
     ws.connectionTime = Math.floor((Number(json.now) - ws.connectionTime) / 1000);
-
-    game.clients.set(authed.id, ws);
+    ws.authenticated = true;
 
     const message = {
       type: 'syncGameState',
@@ -38,8 +39,8 @@ function execute(ws, json, activeGames, gameAuthTokens, timeout) {
             id: player.id,
             name: player.name,
             dead: player.dead,
-            handUp: (canSeeVotes(game.customSpecials, game.players) || authed.id === game.storyteller || authed.id === player.id) ? player.handUp : false,
-            voteLocked: (canSeeVotes(game.customSpecials, game.players) || authed.id === game.storyteller || authed.id === player.id) ?  player.voteLocked : false,
+            handUp: (canSeeVotes(game.customSpecials, game.players, game.forceHidden) || authed.id === game.storyteller || authed.id === player.id) ? player.handUp : false,
+            voteLocked: (canSeeVotes(game.customSpecials, game.players, game.forceHidden) || authed.id === game.storyteller || authed.id === player.id) ?  player.voteLocked : false,
             usedGhostVote: player.usedGhostVote,
             marked: player.marked,
             ...(game.storyteller === authed.id ? { 

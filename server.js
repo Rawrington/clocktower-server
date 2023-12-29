@@ -107,6 +107,8 @@ wss.on('connection', (ws) => {
 
   ws.connectionTime = Date.now();
 
+  ws.authenticated = false;
+
   ws.isAlive = true;
   ws.deadCounter = 0;
 
@@ -197,8 +199,8 @@ const gameSync = setInterval(() => {
               id: player.id,
               name: player.name,
               dead: player.dead,
-              handUp: (canSeeVotes(game.players, game.customSpecials) || sockIndex === game.storyteller || sockIndex === player.id) ? player.handUp : false,
-              voteLocked: (canSeeVotes(game.players, game.customSpecials) || sockIndex === game.storyteller || sockIndex === player.id) ?  player.voteLocked : false,
+              handUp: (canSeeVotes(game.players, game.customSpecials, game.forceHidden) || sockIndex === game.storyteller || sockIndex === player.id) ? player.handUp : false,
+              voteLocked: (canSeeVotes(game.players, game.customSpecials, game.forceHidden) || sockIndex === game.storyteller || sockIndex === player.id) ?  player.voteLocked : false,
               usedGhostVote: player.usedGhostVote,
               marked: player.marked,
               firstNight: sockIndex === game.storyteller ? player.firstNight : false,

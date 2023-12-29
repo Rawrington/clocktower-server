@@ -26,9 +26,9 @@ export function invitePlayer(client, auth, user, member, game, guildId, guildNam
             id: player.id,
             name: player.name,
             dead: player.dead,
-            handUp: (canSeeVotes(game.players, game.customSpecials) || id === game.storyteller || id === player.id) ? player.handUp : false,
+            handUp: (canSeeVotes(game.players, game.customSpecials, game.forceHidden) || id === game.storyteller || id === player.id) ? player.handUp : false,
             usedGhostVote: player.usedGhostVote,
-            voteLocked: (canSeeVotes(game.players, game.customSpecials) || id === game.storyteller || id === player.id) ? player.voteLocked : false,
+            voteLocked: (canSeeVotes(game.players, game.customSpecials, game.forceHidden) || id === game.storyteller || id === player.id) ? player.voteLocked : false,
             marked: player.marked,
           }
         }),

@@ -47,8 +47,8 @@ function execute(ws, json, activeGames) {
   };
 
   game.clients.forEach((socket, id) => {
-    message.player.handUp = (canSeeVotes(game.players, game.customSpecials) || id === game.storyteller || id === player.id) ? player.handUp : false;
-    message.player.voteLocked = (canSeeVotes(game.players, game.customSpecials) || id === game.storyteller || id === player.id) ? true : false;
+    message.player.handUp = (canSeeVotes(game.players, game.customSpecials, game.forceHidden) || id === game.storyteller || id === player.id) ? player.handUp : false;
+    message.player.voteLocked = (canSeeVotes(game.players, game.customSpecials, game.forceHidden) || id === game.storyteller || id === player.id) ? true : false;
 
     socket.send(JSON.stringify(message));
   });

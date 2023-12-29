@@ -32,6 +32,22 @@ const testPlayers = [
   },
 ];
 
+function getAuth(gameAuthTokens, playerId, guildId) {
+  let lastAuth = false;
+
+  gameAuthTokens.forEach((auth, token) => {
+    if (auth.id === playerId && auth.game === guildId) {
+      lastAuth = token;
+    }
+  });
+
+  if (lastAuth !== false) {
+    return lastAuth;
+  }
+
+  return nanoid();
+}
+
 const data = new SlashCommandBuilder()
   .setName('creategame')
   .setDescription('Creates a Clocktower game.')
@@ -47,6 +63,15 @@ async function execute(interaction, db) {
     await interaction.reply({ content: 'There is already a running game!', ephemeral: true });
   }
   else {
+    if (interaction.guildId === '1180188559769092216') {
+      testPlayers.forEach((user) => {
+        interaction.client.gameAuthTokens.set(user.name, {
+          id: user.id,
+          game: interaction.guildId,
+        });
+      });
+    }
+
     const newGame = {
       id: interaction.guildId,
       players: interaction.guildId === '1180188559769092216' ? [...testPlayers] : [],
