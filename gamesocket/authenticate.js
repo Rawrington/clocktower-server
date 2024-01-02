@@ -51,8 +51,16 @@ function execute(ws, json, activeGames, gameAuthTokens, timeout) {
               hasGrim: player.hasGrim,
               role: player.role,
               firstNight: player.firstNight,
-            } : (player.traveler ? {role: player.role} : {})),
+            } : player.traveler ? {
+              role: player.role
+            } : player.id === authed.id && player.seenRole !== player.lastKnownRole ? {
+              role: player.lastKnownRole
+            } : {}),
           };
+
+          if (player.id === authed.id && player.seenRole !== player.lastKnownRole) {
+            player.seenRole = player.lastKnownRole;
+          }
 
           return playerObj;
         }),

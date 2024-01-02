@@ -92,11 +92,11 @@ const server = https.createServer(options);
 
 const wss = new WebSocket.Server({
   ...(sslOn ? { server } : { port: 8080 }),
-  /*verifyClient: info =>
+  verifyClient: info =>
     info.origin &&
     !!info.origin.match(
-      /^https?:\/\/clocktowertest\.ddns\.net/i
-    )*/
+      /^https?:\/\/zachevil\.online/i
+    )
   });
 
 wss.on('connection', (ws) => {

@@ -218,9 +218,9 @@ export function assignRoles(game, roles) {
   
   currentPlayers.forEach((player, i) => {
     // HAND THOSE ROLES OUT LIKE CANDY!
-    game.players[i].role = shuffled[i];
-    game.players[i].firstNight = true;
-  })
+    currentPlayers[i].role = shuffled[i];
+    currentPlayers[i].firstNight = true;
+  });
 
   return true;
 };
@@ -228,6 +228,8 @@ export function assignRoles(game, roles) {
 export function sendOutRoles(game, sendToAll) {
   if (sendToAll) {
     game.players.forEach((player) => {
+      player.lastKnownRole = player.role;
+
       const client = game.clients.get(player.id);
 
       // if this happens wtf!
