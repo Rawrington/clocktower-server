@@ -237,6 +237,8 @@ export function sendOutRoles(game, sendToAll) {
         return;
       }
 
+      player.seenRole = player.role;
+
       client.send(JSON.stringify({
         type: 'updatePlayer',
         player: {
