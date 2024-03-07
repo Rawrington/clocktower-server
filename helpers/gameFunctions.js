@@ -219,6 +219,7 @@ export function assignRoles(game, roles) {
   currentPlayers.forEach((player, i) => {
     // HAND THOSE ROLES OUT LIKE CANDY!
     currentPlayers[i].role = shuffled[i];
+    currentPlayers[i].traveler = false;
     currentPlayers[i].firstNight = true;
   });
 
