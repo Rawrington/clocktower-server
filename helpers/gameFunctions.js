@@ -54,7 +54,7 @@ export async function moveToNightChannels(client, game) {
     return 'Not enough players!';
   }
 
-  const guild = await client.guilds.fetch(game.id);
+  const guild = client.guilds.cache.get(game.id);
 
   const playerList = game.players.map(player => player.member).filter(member => member && member.voice);
 
