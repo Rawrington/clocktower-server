@@ -54,15 +54,17 @@ export async function moveToNightChannels(client, game) {
     return 'Not enough players!';
   }
 
-  const guild = client.guilds.cache.get(game.id);
+  const guild = await client.guilds.fetch(game.id);
 
   const playerList = game.players.map(player => player.member).filter(member => member && member.voice);
 
   if(playerList.length <= 0) {
     return;
   }
+  
+  const nightCategory = await guild.channels.fetch(game.nightCategory);
 
-  const nightChannels = guild.channels.cache.filter((channel) => channel.parent 
+  const nightChannels = nightCategory.children.cache.filter((channel) => channel.parent 
     && channel.parentId === game.nightCategory
     && channel.permissionsFor(playerList[0]).has(PermissionsBitField.Flags.Connect)
   ).sort((a, b) => {
@@ -91,7 +93,7 @@ export async function moveToNightChannels(client, game) {
   const st = game.storytellerMember;
 
   if(st && st.voice) {
-    const stChannels = guild.channels.cache.filter((channel) => channel.parent 
+    const stChannels = nightCategory.children.cache.filter((channel) => channel.parent 
       && channel.parentId === game.nightCategory
       && !channel.permissionsFor(playerList[0]).has(PermissionsBitField.Flags.Connect)
     );
@@ -110,7 +112,7 @@ export async function moveToNightChannels(client, game) {
 }
 
 export async function moveToDayChannel(client, game) {
-  const guild = client.guilds.cache.get(game.id);
+  const guild = await client.guilds.fetch(game.id);
 
   const playerList = game.players.map(player => player.member).filter(member => member && member.voice);
 

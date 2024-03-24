@@ -99,7 +99,7 @@ function execute(ws, json, activeGames) {
 
   const message = {
     type: 'setEdition',
-    edition: json.edition,
+    edition: game.edition,
   };
 
   game.clients.forEach((socket) => {

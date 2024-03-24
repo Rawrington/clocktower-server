@@ -115,9 +115,6 @@ async function execute(interaction, db) {
       interaction.client.activeGames.set(interaction.guildId, newGame);
     });
 
-    //update channel cache to avoid wierd night move bug?
-    interaction.guild.channels.fetch();
-
     await interaction.reply({ content: `Created a Clocktower Game for this server! Your Link: ${url}`, ephemeral: true });
   }
 };
