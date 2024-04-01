@@ -64,10 +64,7 @@ export async function moveToNightChannels(client, game) {
   
   const nightCategory = await guild.channels.fetch(game.nightCategory);
 
-  const nightChannels = nightCategory.children.cache.filter((channel) => channel.parent 
-    && channel.parentId === game.nightCategory
-    && channel.permissionsFor(playerList[0]).has(PermissionsBitField.Flags.Connect)
-  ).sort((a, b) => {
+  const nightChannels = nightCategory.children.cache.filter((channel) => channel.permissionsFor(playerList[0]).has(PermissionsBitField.Flags.Connect)).sort((a, b) => {
     return a.rawPosition - b.rawPosition;
   });
 
@@ -93,10 +90,7 @@ export async function moveToNightChannels(client, game) {
   const st = game.storytellerMember;
 
   if(st && st.voice) {
-    const stChannels = nightCategory.children.cache.filter((channel) => channel.parent 
-      && channel.parentId === game.nightCategory
-      && !channel.permissionsFor(playerList[0]).has(PermissionsBitField.Flags.Connect)
-    );
+    const stChannels = nightCategory.children.cache.filter((channel) => !channel.permissionsFor(playerList[0]).has(PermissionsBitField.Flags.Connect));
 
     if(stChannels.size > 0) {
       try {
