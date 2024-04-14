@@ -12,6 +12,9 @@ const schema = {
     id: {
       type: 'string',
     },
+    name: {
+      type: 'string',
+    },
     role: {
       type: ['string', 'number'],
     },
@@ -66,6 +69,8 @@ function execute(ws, json, activeGames) {
   if(!validate(json.player)) {
     return;
   }
+
+  json.player.name = json.player.name.substring(0, 32);
 
   const playerIndex = game.players.findIndex(player => player.id === json.player.id) 
 
