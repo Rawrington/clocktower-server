@@ -203,6 +203,7 @@ const gameSync = setInterval(() => {
               voteLocked: (canSeeVotes(game.players, game.customSpecials, game.forceHidden) || sockIndex === game.storyteller || sockIndex === player.id) ?  player.voteLocked : false,
               usedGhostVote: player.usedGhostVote,
               marked: player.marked,
+              pronouns: player.pronouns,
               firstNight: sockIndex === game.storyteller ? player.firstNight : false,
             };
 

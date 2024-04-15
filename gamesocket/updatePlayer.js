@@ -62,7 +62,7 @@ function execute(ws, json, activeGames) {
     return;
   }
 
-  if(json.myId != game.storyteller) {
+  if(json.myId !== game.storyteller) {
     return;
   }
 
@@ -70,14 +70,15 @@ function execute(ws, json, activeGames) {
     return;
   }
 
-  json.player.name = json.player.name.substring(0, 32);
+  if (json.player.name) {
+    json.player.name = json.player.name.substring(0, 32);
+  }
 
   const playerIndex = game.players.findIndex(player => player.id === json.player.id) 
 
-  if (playerIndex === -1)
+  if (playerIndex === -1) {
     return;
-
-  let send = true;
+  }
 
   const oldPlayer = game.players[playerIndex];
 

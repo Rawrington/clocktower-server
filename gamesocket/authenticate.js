@@ -47,6 +47,7 @@ function execute(ws, json, activeGames, gameAuthTokens, timeout) {
             voteLocked: (canSeeVotes(game.customSpecials, game.players, game.forceHidden) || authed.id === game.storyteller || authed.id === player.id) ?  player.voteLocked : false,
             usedGhostVote: player.usedGhostVote,
             marked: player.marked,
+            pronouns: player.pronouns,
             ...(game.storyteller === authed.id ? { 
               hasGrim: player.hasGrim,
               role: player.role,

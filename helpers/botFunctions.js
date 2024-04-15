@@ -9,11 +9,16 @@ export function invitePlayer(client, auth, user, member, game, guildId, guildNam
   });
 
   if (!game.players.some(player => player.id === user.id) && user.id !== game.storyteller && member) {
+    const pronouns = member.displayName.match(/[\[|\(]([^\/]+?)\/(.+?)[\]|\)]/);
+
+    const filterName = member.displayName.replace(/[\[|\(]([^\/]+?)\/(.+?)[\]|\)]/, '');
+
     const newPlayer = {
       id: user.id,
-      name: member.displayName,
+      name: filterName,
       role: -1,
       member: member,
+      pronouns: pronouns[1] + '/' + pronouns[2],
     };
 
     game.players.push(newPlayer);
@@ -30,6 +35,7 @@ export function invitePlayer(client, auth, user, member, game, guildId, guildNam
             usedGhostVote: player.usedGhostVote,
             voteLocked: (canSeeVotes(game.players, game.customSpecials, game.forceHidden) || id === game.storyteller || id === player.id) ? player.voteLocked : false,
             marked: player.marked,
+            pronouns: player.pronouns,
           }
         }),
       }));
