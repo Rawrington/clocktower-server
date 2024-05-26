@@ -331,7 +331,7 @@ function checkPlayer(player, game, initialHand, length, visibleVote) {
     }));
   });
 
-  if (!game.players[game.nomination.hand % length].voteLocked) {
+  if (!game.players[game.nomination.hand % length].voteLocked && game.players[game.nomination.hand % length].voteLocked !== 0) {
     game.voteTimer = setTimeout(() => {
       checkPlayer(game.players[game.nomination.hand % length], game, initialHand, length, visibleVote);
     }, game.nomination.transition * 1000);

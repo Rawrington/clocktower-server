@@ -28,7 +28,7 @@ function execute(ws, json, activeGames) {
 
   const player = game.players.find(player => player.id === json.myId);
 
-  if(!player || player.voteLocked || (player.dead && player.usedGhostVote)) {
+  if(!player || player.voteLocked || player.voteLocked === 0 || (player.dead && player.usedGhostVote)) {
     return;
   }
 

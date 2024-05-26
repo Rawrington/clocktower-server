@@ -30,11 +30,27 @@ function execute(ws, json, activeGames) {
   }
 
   // over 0.15s
-  if (((Date.now() - player.lockedAt) > 150) || !player.voteLocked) {
+  if (((Date.now() - player.lockedAt) > 150) || (!player.voteLocked && player.voteLocked !== 0)) {
     return;
   }
 
-  if(player.handUp !== json.hand) {
+  if (!player.activeSpecials.includes('doublevote')) {
+    json.hand = !!json.hand;
+  }
+  else if (json.hand > 2) {
+    json.hand = 2;
+  }
+  else if (json.hand < 0) {
+    json.hand = 0;
+  }
+
+  if (player.handUp !== json.hand) {
+    player.handUp = json.hand;
+
+    if (!player.handUp) {
+      player.handUp = 0
+    }
+
     game.nomination.voters.filter(voter => voter === player.id);
 
     // eventually this will be a for loop im just keeping it like this so i remember
@@ -45,8 +61,7 @@ function execute(ws, json, activeGames) {
       }
     }
   }
-
-  player.handUp = json.hand;
+  
   player.voteLocked = game.nomination.votes + json.hand;
 
   const message = {

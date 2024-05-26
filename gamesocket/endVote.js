@@ -41,7 +41,7 @@ function execute(ws, json, activeGames) {
       type: (nomPlayer && nomPlayer.traveler) ? 'Exile' : 'Execution',
       votes: game.nomination.votes,
       majority: Math.ceil(game.players.filter(player => !player.dead).length / 2),
-      voters: game.nomination.voters,
+      voters: game.nomination.voters.map(voter => game.players.find(player => player.id === voter).name),
     });
   }
 

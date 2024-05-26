@@ -42,7 +42,7 @@ async function execute(interaction, db) {
   else {
     if (channel.members && channel.members.size > 0) {
       // this is a cheap randomization it is not perfect maybe implement fisher yates for this and roles l8er
-      channel.members.toSorted(() => 0.5 - Math.random()).forEach((member) => {
+      channel.members.sort(() => 0.5 - Math.random()).forEach((member) => {
         const auth = getAuth(interaction.client.gameAuthTokens, member.id, interaction.guildId);
 
         invitePlayer(interaction.client, auth, member.user, member, game, interaction.guildId, interaction.guild.name);
