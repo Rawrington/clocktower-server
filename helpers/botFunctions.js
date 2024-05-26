@@ -18,7 +18,8 @@ export function invitePlayer(client, auth, user, member, game, guildId, guildNam
       name: filterName,
       role: -1,
       member: member,
-      pronouns: pronouns[1] + '/' + pronouns[2],
+      pronouns: pronouns && (pronouns[1] + '/' + pronouns[2]),
+      activeSpecials: [],
     };
 
     game.players.push(newPlayer);

@@ -5,30 +5,37 @@ const testPlayers = [
   {
     id: '1',
     name: 'Test1',
+    activeSpecials: [],
   },
   {
     id: '2',
     name: 'Test2',
+    activeSpecials: [],
   },
   {
     id: '3',
     name: 'Test3',
+    activeSpecials: [],
   },
   {
     id: '4',
     name: 'Test4',
+    activeSpecials: [],
   },
   {
     id: '5',
     name: 'Test5',
+    activeSpecials: [],
   },
   {
     id: '6',
     name: 'Test6',
+    activeSpecials: [],
   },
   {
     id: '7',
     name: 'Test7',
+    activeSpecials: [],
   },
 ];
 

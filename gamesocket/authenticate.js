@@ -65,6 +65,7 @@ function execute(ws, json, activeGames, gameAuthTokens, timeout) {
 
           return playerObj;
         }),
+      activeSpecials: authed.id !== game.storyteller ? game.players.find(player => player.id === authed.id).activeSpecials : [],
       edition: game.edition,
       nomination: game.nomination,
       timer: game.timer + (ws.connectionTime * 1000),

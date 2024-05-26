@@ -34,21 +34,33 @@ function execute(ws, json, activeGames) {
     return;
   }
 
+  if(player.handUp !== json.hand) {
+    game.nomination.voters.filter(voter => voter === player.id);
+
+    // eventually this will be a for loop im just keeping it like this so i remember
+    if (player.handUp) {
+      game.nomination.voters.push(player.id);
+      if (player.handUp === 2) {
+        game.nomination.voters.push(player.id);
+      }
+    }
+  }
+
   player.handUp = json.hand;
-  player.voteLocked = true;
+  player.voteLocked = game.nomination.votes + json.hand;
 
   const message = {
     type: 'updatePlayer',
     player: {
       id: player.id,
       handUp: player.handUp,
-      voteLocked: true,
+      voteLocked: player.voteLocked,
     },
   };
 
   game.clients.forEach((socket, id) => {
     message.player.handUp = (canSeeVotes(game.players, game.customSpecials, game.forceHidden) || id === game.storyteller || id === player.id) ? player.handUp : false;
-    message.player.voteLocked = (canSeeVotes(game.players, game.customSpecials, game.forceHidden) || id === game.storyteller || id === player.id) ? true : false;
+    message.player.voteLocked = (canSeeVotes(game.players, game.customSpecials, game.forceHidden) || id === game.storyteller || id === player.id) ? player.voteLocked : false;
 
     socket.send(JSON.stringify(message));
   });

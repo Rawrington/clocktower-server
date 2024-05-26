@@ -42,6 +42,7 @@ function execute(ws, json, activeGames) {
     player.voteLocked = false;
     player.handUp = false;
     player.role = -1;
+    player.activeSpecials = [];
   });
 
   game.nomination = {
@@ -51,6 +52,8 @@ function execute(ws, json, activeGames) {
     open: false,
     running: false,
     over: false,
+    votes: 0,
+    voters: [],
   };
 
   game.daytracker = 0;
@@ -72,6 +75,7 @@ function execute(ws, json, activeGames) {
           role: player.role,
         }
       }),
+      activeSpecials: [],
       edition: game.edition,
       nomination: game.nomination,
       timer: game.timer + (ws.connectionTime * 1000),

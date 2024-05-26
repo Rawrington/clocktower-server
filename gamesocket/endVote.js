@@ -29,9 +29,9 @@ function execute(ws, json, activeGames) {
     clearTimeout(game.voteTimer);
   }
 
-  if ((!game.voteInProgress || game.nomination.over) && json.result) {
-    const voters = game.players.filter(player => player.handUp).map(player => player.name);
+  game.nomination.votes = game.nomination.voters.length;
 
+  if ((!game.voteInProgress || game.nomination.over) && json.result) {
     const nomPlayer = game.players[game.nomination.nominated.index];
 
     game.votingHistory.push({
@@ -39,9 +39,9 @@ function execute(ws, json, activeGames) {
       nominator: game.nomination.nominator.name,
       nominated: game.nomination.nominated.name,
       type: (nomPlayer && nomPlayer.traveler) ? 'Exile' : 'Execution',
-      votes: voters.length,
+      votes: game.nomination.votes,
       majority: Math.ceil(game.players.filter(player => !player.dead).length / 2),
-      voters: voters,
+      voters: game.nomination.voters,
     });
   }
 

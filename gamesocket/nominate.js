@@ -46,6 +46,8 @@ function execute(ws, json, activeGames) {
   game.nomination.hand = nominatedIndex;
   game.nomination.running = false;
   game.nomination.over = false;
+  game.nomination.voters = [];
+  game.nomination.votes = 0;
 
   const message = {
     type: 'setNomination',

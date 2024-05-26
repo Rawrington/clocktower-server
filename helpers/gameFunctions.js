@@ -283,7 +283,24 @@ function checkPlayer(player, game, initialHand, length, visibleVote) {
 
     player.lockedAt = Date.now();
 
-    player.voteLocked = true;
+    game.nomination.votes = game.nomination.voters.length;
+
+    // falsey value? 0 it out
+    if (!player.handUp) {
+      player.handUp = 0;
+    }
+
+    //2 or truthy value (1)
+    // eventually this will be a for loop i think im just keeping it like this so i remember
+
+    if (player.handUp) {
+      game.nomination.voters.push(player.id);
+      if (player.handUp === 2) {
+        game.nomination.voters.push(player.id);
+      }
+    }
+
+    player.voteLocked = game.nomination.votes + player.handUp;
 
     const handMod = game.nomination.hand % length;
 

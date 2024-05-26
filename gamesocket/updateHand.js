@@ -21,10 +21,26 @@ function execute(ws, json, activeGames) {
     return;
   }
 
+  //right now only 0 - 2 and true/false are supported
+  if (isNaN(json.hand) && typeof json.hand !== 'boolean') {
+    return;
+  }
+
   const player = game.players.find(player => player.id === json.myId);
 
   if(!player || player.voteLocked || (player.dead && player.usedGhostVote)) {
     return;
+  }
+
+  // validity check, this shouldnt happen but just incase it does!
+  if (!player.activeSpecials.includes('doublevote')) {
+    json.hand = !!json.hand;
+  }
+  else if (json.hand > 2) {
+    json.hand = 2;
+  }
+  else if (json.hand < 0) {
+    json.hand = 0;
   }
 
   player.handUp = json.hand;

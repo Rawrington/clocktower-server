@@ -209,6 +209,7 @@ const gameSync = setInterval(() => {
 
             return playerObj;
           }),
+        activeSpecials: sockIndex !== game.storyteller ? game.players.find(player => player.id === sockIndex).activeSpecials : [],
         edition: game.edition,
         nomination: game.nomination,
         timer: typeof game.timer === 'string' ? game.timer : (game.timer + (sock.connectionTime * 1000)),
