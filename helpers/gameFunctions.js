@@ -49,7 +49,7 @@ function canMove(guild, member, channel) {
   return true;
 }
 
-export async function moveToNightChannels(client, game) {
+export async function moveToNightChannels(client, game, retry) {
   if (game.players.length <= 0) {
     return 'Not enough players!';
   }
@@ -69,6 +69,10 @@ export async function moveToNightChannels(client, game) {
   });
 
   if (nightChannels.size < playerList.length) {
+    if (retry < 3) {
+      setTimeout(() => moveToNightChannels(client, game, retry + 1), 1000);
+    }
+
     return 'Not enough channels for ' + playerList.length + 'players';
   }
 

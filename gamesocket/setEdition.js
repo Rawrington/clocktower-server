@@ -7,7 +7,7 @@ import schema from '../helpers/script-schema.json' assert { type: 'json' };
 
 import { getFabled } from '../helpers/gameFunctions.js'
 
-const ajv = new Ajv2020({code: {esm: true, removeAdditional: true, useDefaults: true}});
+const ajv = new Ajv2020({validateFormats: false, code: {esm: true}});
 
 addFormats(ajv)
 

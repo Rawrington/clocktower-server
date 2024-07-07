@@ -31,6 +31,10 @@ function execute(ws, json, activeGames) {
 
   const player = game.players.find(player => player.id === json.player);
 
+  if(!player) {
+    return;
+  }
+
   player.activeSpecials = json.activeSpecials;
 
   const message = {

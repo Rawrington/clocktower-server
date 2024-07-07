@@ -19,6 +19,8 @@ export function invitePlayer(client, auth, user, member, game, guildId, guildNam
       role: -1,
       member: member,
       pronouns: pronouns && (pronouns[1] + '/' + pronouns[2]),
+      handUp: false,
+      voteLocked: false,
       activeSpecials: [],
     };
 

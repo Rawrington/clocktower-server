@@ -143,11 +143,12 @@
           },
           "reminders": {
             "type": "array",
+            "maxItems": 20,
             "default": [],
             "title": "Character reminder tokens",
             "items": {
               "type": "string",
-              "maxLength": 20,
+              "maxLength": 25,
               "examples": [
                 "Townsfolk",
                 "Wrong",
@@ -158,11 +159,12 @@
           },
           "remindersGlobal": {
             "type": "array",
+            "maxItems": 20,
             "default": [],
             "title": "Global character reminder tokens, which will be selectable even when the character is not in play.",
             "items": {
               "type": "string",
-              "maxLength": 20,
+              "maxLength": 25,
               "examples": [
                 "Drunk",
                 "Is The Philosopher"
@@ -241,7 +243,9 @@
                     "bag-duplicate",
                     "multiplier",
                     "hidden",
-                    "replace-character"
+                    "replace-character",
+                    "player",
+                    "card"
                   ]
                 },
                 "value": {
@@ -289,6 +293,11 @@
                   "type": "signal",
                   "name": "grimoire",
                   "time": "night"
+                },
+                {
+                  "type": "signal",
+                  "name": "card",
+                  "value": "This is a Custom ST Card"
                 },
                 {
                   "type": "ability",
@@ -379,6 +388,57 @@
             "title": "The script background image",
             "examples": [
               "https://imgur.com/background.jpg"
+            ]
+          },
+          "firstNight": {
+            "type": "array",
+            "title": "The relative First Night order of characters on this script.",
+            "description": "A custom first night order for this script can be provided in the form of an array here, with optional special entries for 'dusk', 'minioninfo', 'demoninfo' and 'dawn'.",
+            "items": {
+              "type": "string",
+              "title": "Character ID of an on-script character in the first night order"
+            },
+            "examples": [
+              [
+                "dusk",
+                "minioninfo",
+                "demoninfo",
+                "poisoner",
+                "spy",
+                "washerwoman",
+                "librarian",
+                "investigator",
+                "chef",
+                "empath",
+                "fortuneteller",
+                "butler",
+                "dawn"
+              ]
+            ]
+          },
+          "otherNight": {
+            "type": "array",
+            "title": "The relative Other Nights order of characters on this script.",
+            "description": "A custom other night order for this script can be provided in the form of an array here, with optional special entries for 'dusk' and 'dawn'.",
+            "items": {
+              "type": "string",
+              "title": "Character ID of an on-script character in the other night order"
+            },
+            "examples": [
+              [
+                "dusk",
+                "poisoner",
+                "monk",
+                "spy",
+                "scarletwoman",
+                "imp",
+                "ravenkeeper",
+                "undertaker",
+                "empath",
+                "fortuneteller",
+                "butler",
+                "dawn"
+              ]
             ]
           }
         },

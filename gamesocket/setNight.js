@@ -45,7 +45,7 @@ function execute(ws, json, activeGames, gameAuthTokens, timeout, client) {
 
   if(json.discord) {
     if(game.night) {
-      moveToNightChannels(client, game);
+      moveToNightChannels(client, game, 0);
     }
     else
     {

@@ -1,6 +1,6 @@
 const name = 'removePlayer';
 
-function execute(ws, json, activeGames) {
+function execute(ws, json, activeGames, gameAuthTokens) {
   if (typeof json.gameId !== 'string' || typeof json.myId !== 'string') {
     return;
   }
@@ -25,6 +25,18 @@ function execute(ws, json, activeGames) {
   }
 
   game.players = game.players.filter(player => player.id !== json.player);
+
+  let lastAuth = false;
+
+  gameAuthTokens.forEach((auth, token) => {
+    if (auth.id === json.player && auth.game === json.gameId) {
+      lastAuth = token;
+    }
+  });
+
+  if (lastAuth) {
+    gameAuthTokens.delete(lastAuth);
+  }
 
   const client = game.clients.get(json.player);
 
