@@ -6,36 +6,43 @@ const testPlayers = [
     id: '1',
     name: 'Test1',
     activeSpecials: [],
+    avatarURL: `https://cdn.discordapp.com/avatars/1180181262317662388/61e7b513047e3b39eb227bc5e23d7bdb.png?size=96`,
   },
   {
     id: '2',
     name: 'Test2',
     activeSpecials: [],
+    avatarURL: `https://cdn.discordapp.com/avatars/1180181262317662388/61e7b513047e3b39eb227bc5e23d7bdb.png?size=96`,
   },
   {
     id: '3',
     name: 'Test3',
     activeSpecials: [],
+    avatarURL: `https://cdn.discordapp.com/avatars/1180181262317662388/61e7b513047e3b39eb227bc5e23d7bdb.png?size=96`,
   },
   {
     id: '4',
     name: 'Test4',
     activeSpecials: [],
+    avatarURL: `https://cdn.discordapp.com/avatars/1180181262317662388/61e7b513047e3b39eb227bc5e23d7bdb.png?size=96`,
   },
   {
     id: '5',
     name: 'Test5',
     activeSpecials: [],
+    avatarURL: `https://cdn.discordapp.com/avatars/1180181262317662388/61e7b513047e3b39eb227bc5e23d7bdb.png?size=96`,
   },
   {
     id: '6',
     name: 'Test6',
     activeSpecials: [],
+    avatarURL: `https://cdn.discordapp.com/avatars/1180181262317662388/61e7b513047e3b39eb227bc5e23d7bdb.png?size=96`,
   },
   {
     id: '7',
     name: 'Test7',
     activeSpecials: [],
+    avatarURL: `https://cdn.discordapp.com/avatars/1180181262317662388/61e7b513047e3b39eb227bc5e23d7bdb.png?size=96`,
   },
 ];
 
@@ -81,7 +88,7 @@ async function execute(interaction, db) {
 
     const newGame = {
       id: interaction.guildId,
-      players: interaction.guildId === '1180188559769092216' ? [...testPlayers] : [],
+      players: interaction.guildId === '1180188559769092216' ? JSON.parse(JSON.stringify(testPlayers)) : [],
       nomination: {
         nominator: {},
         nominated: {},

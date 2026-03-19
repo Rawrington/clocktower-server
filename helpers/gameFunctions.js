@@ -1,6 +1,6 @@
-import standardRoles from './roles.json' assert { type: 'json' };
-import fabled from './fabled.json' assert { type: 'json' };
-import specials from './specials.json' assert { type: 'json' };
+import standardRoles from './roles.json' with { type: 'json' };
+import fabled from './fabled.json' with { type: 'json' };
+import specials from './specials.json' with { type: 'json' };
 import { PermissionsBitField } from 'discord.js';
 
 // this is taken from Moveer and edited, it just prevents unneccesaary errors and tells us what went wrong.
@@ -59,6 +59,17 @@ export async function moveToNightChannels(client, game, retry) {
   const playerList = game.players.map(player => player.member).filter(member => member && member.voice);
 
   if(playerList.length <= 0) {
+    if (retry === 0 && game.daytracker === 1) {
+      //HACK HACK HACK HACK HACK! this actually has a solid chance of fixing it kinda gross
+      setTimeout(() => moveToDayChannel(client, game), 1000);
+      setTimeout(() => moveToNightChannels(client, game, retry + 1), 2000);
+      return;
+    }
+
+    if (retry < 10) {
+      setTimeout(() => moveToNightChannels(client, game, retry + 1), 1000);
+    }
+
     return;
   }
   
@@ -69,7 +80,14 @@ export async function moveToNightChannels(client, game, retry) {
   });
 
   if (nightChannels.size < playerList.length) {
-    if (retry < 3) {
+    if (retry === 0 && game.daytracker === 1) {
+      //HACK HACK HACK HACK HACK! this actually has a solid chance of fixing it kinda gross
+      setTimeout(() => moveToDayChannel(client, game), 1000);
+      setTimeout(() => moveToNightChannels(client, game, retry + 1), 2000);
+      return 'Not enough channels for ' + playerList.length + 'players';
+    }
+
+    if (retry < 10) {
       setTimeout(() => moveToNightChannels(client, game, retry + 1), 1000);
     }
 
@@ -207,7 +225,12 @@ export function getFabled(role) {
 
 export function assignRoles(game, roles) {
   // shuffle the roles!
-  const shuffled = roles.toSorted(() => 0.5 - Math.random());
+  const shuffled = roles.map((role) => {
+      return {sort: Math.random(), role: role}
+    }).toSorted((a, b) => a.sort - b.sort)
+    .map((role) => role.role);
+
+  // leads to more evened out probabilities in large numbers = better randomizer than old method (law of large numbers)
 
   // not used atm because we cant assign travellers BUT! will be used probably.
   const currentPlayers = game.players.filter((player) => (!getRole(player.role, game.edition) || getRole(player.role, game.edition).team !== 'traveler')); 

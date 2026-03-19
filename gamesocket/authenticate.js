@@ -1,5 +1,7 @@
 const name = 'authenticate';
 
+const clientVersion = '0.5.1';
+
 import { canSeeVotes } from '../helpers/gameFunctions.js';
 
 function execute(ws, json, activeGames, gameAuthTokens, timeout) {
@@ -8,6 +10,15 @@ function execute(ws, json, activeGames, gameAuthTokens, timeout) {
   const authed = gameAuthTokens.get(json.token);
 
   if (authed && !isNaN(json.now) && typeof json.token === 'string') {
+    
+    if (json.version !== clientVersion) {
+      ws.send(JSON.stringify({
+        type: 'authenticate',
+        error: 'versionmismatch'
+      }));
+      ws.close();
+    }
+
     const game = activeGames.get(authed.game);
 
     if(!game) {
@@ -48,6 +59,7 @@ function execute(ws, json, activeGames, gameAuthTokens, timeout) {
             usedGhostVote: player.usedGhostVote,
             marked: player.marked,
             pronouns: player.pronouns,
+            avatarURL: player.avatarURL,
             ...(game.storyteller === authed.id ? { 
               hasGrim: player.hasGrim,
               role: player.role,

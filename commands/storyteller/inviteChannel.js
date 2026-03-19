@@ -41,11 +41,16 @@ async function execute(interaction, db) {
   }
   else {
     if (channel.members && channel.members.size > 0) {
-      // this is a cheap randomization it is not perfect maybe implement fisher yates for this and roles l8er
-      channel.members.sort(() => 0.5 - Math.random()).forEach((member) => {
-        const auth = getAuth(interaction.client.gameAuthTokens, member.id, interaction.guildId);
+      // more expensive than fisher yates but if youre inviting a channel of 80 people thats literally youre own fault
+      channel.members.map((member) => { 
+          return {sort: Math.random(), member: member} 
+        })
+        .toSorted((a, b) => a.sort - b.sort)
+        .map((member) => member.member)
+        .forEach((member) => {
+          const auth = getAuth(interaction.client.gameAuthTokens, member.id, interaction.guildId);
 
-        invitePlayer(interaction.client, auth, member.user, member, game, interaction.guildId, interaction.guild.name);
+          invitePlayer(interaction.client, auth, member.user, member, game, interaction.guildId, interaction.guild.name);
       });
     }
   }

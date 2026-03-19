@@ -2,7 +2,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import process from 'node:process';
 import { Client, Collection, Events, GatewayIntentBits } from 'discord.js';
-import config from './config.json' assert { type: 'json' };
+import config from './config.json' with { type: 'json' };
 import sqlite3 from 'sqlite3';
 import { dirname } from 'path';
 import { fileURLToPath } from 'url';
@@ -204,6 +204,7 @@ const gameSync = setInterval(() => {
               usedGhostVote: player.usedGhostVote,
               marked: player.marked,
               pronouns: player.pronouns,
+              avatarURL: player.avatarURL,
               firstNight: sockIndex === game.storyteller ? player.firstNight : false,
             };
 

@@ -3,11 +3,11 @@ const name = 'setEdition';
 import Ajv2020 from 'ajv/dist/2020.js';
 import addFormats from 'ajv-formats';
 
-import schema from '../helpers/script-schema.json' assert { type: 'json' };
+import schema from '../helpers/script-schema.json' with { type: 'json' };
 
 import { getFabled } from '../helpers/gameFunctions.js'
 
-const ajv = new Ajv2020({validateFormats: false, code: {esm: true}});
+const ajv = new Ajv2020({validateFormats: false, code: {esm: true}, allowUnionTypes: true});
 
 addFormats(ajv)
 

@@ -18,6 +18,7 @@ export function invitePlayer(client, auth, user, member, game, guildId, guildNam
       name: filterName,
       role: -1,
       member: member,
+      avatarURL: member.displayAvatarURL({format: "png", forceStatic: true, size: 64}),
       pronouns: pronouns && (pronouns[1] + '/' + pronouns[2]),
       handUp: false,
       voteLocked: false,
@@ -38,6 +39,7 @@ export function invitePlayer(client, auth, user, member, game, guildId, guildNam
             usedGhostVote: player.usedGhostVote,
             voteLocked: (canSeeVotes(game.players, game.customSpecials, game.forceHidden) || id === game.storyteller || id === player.id) ? player.voteLocked : false,
             marked: player.marked,
+            avatarURL: player.avatarURL,
             pronouns: player.pronouns,
           }
         }),

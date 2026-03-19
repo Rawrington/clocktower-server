@@ -4,7 +4,7 @@ import { canSeeVotes } from '../helpers/gameFunctions.js';
 
 import Ajv from 'ajv';
 
-const ajv = new Ajv({ removeAdditional: true });
+const ajv = new Ajv({ removeAdditional: true, allowUnionTypes: true });
 
 const schema = {
   type: 'object',
